@@ -26,6 +26,11 @@ from hyperopt import STATUS_OK, Trials, fmin, hp, tpe, space_eval
 
 import warnings
 warnings.filterwarnings("ignore")
+from sklearn.preprocessing import OneHotEncoder as ohe
+def OneHoting(x):
+    x = np.array(x)
+    x = ohe.fit_transform(x.reshape(-1,1)).toarray()
+    return x
 
 valid_part = 0.3
 pd.set_option('max_columns',100)
@@ -35,7 +40,7 @@ upload = files.upload()
 
 train0 = pd.read_csv('vehicles.csv')
 t = train0.head(5)
-print(t)
+
 train0.info()
 
 train0 = train0.dropna()
@@ -235,6 +240,7 @@ lasso = LassoCV(cv=5)
 lasso.fit(train, target)
 acc_model(5,lasso,train,test)
 
+#XGBoost
 xgb_clf = xgb.XGBRegressor({'objective': 'reg:squarederror'}) 
 parameters = {'n_estimators': [60, 100, 120, 140], 
               'learning_rate': [0.01, 0.1],
@@ -287,11 +293,9 @@ etr.fit(train, target)
 acc_model(14,etr,train,test)
 
 models = pd.DataFrame({
-    'Model': ['Linear Regression', 'Support Vector Machines', 'Linear SVR', 
-              'MLPRegressor', 'Stochastic Gradient Decent', 
-              'Decision Tree Regressor', 'Random Forest',  'XGB', 'LGBM',
-              'GradientBoostingRegressor', 'RidgeRegressor', 'BaggingRegressor', 'ExtraTreesRegressor', 
-              'AdaBoostRegressor', 'VotingRegressor'],
+    'Model': ['KNeighborsRegressor','AdaBoostRegressor','GradientBoostingRegressor','Linear Regression', 'RidgeRegressor', 'LassoRegressor',  
+              'XGB','BaggingRegressor','Random Forest','Support Vector Machines', 'Linear SVR', 'Stochastic Gradient Decent',
+                'VotingRegressor','Decision Tree Regressor','ExtraTreesRegressor'],
     
     'r2_train': acc_train_r2,
     'r2_test': acc_test_r2,
